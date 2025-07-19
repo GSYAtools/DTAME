@@ -1,0 +1,47 @@
+# analyze_calibration_stats.py
+
+import pandas as pd
+import numpy as np
+import json
+import os
+
+INPUT_FILE = "processed_data/bootstrap_divergences.csv"
+OUTPUT_FILE = "processed_data/bootstrap_summary.json"
+
+def main():
+    if not os.path.exists(INPUT_FILE):
+        print(f"[✗] Archivo no encontrado: {INPUT_FILE}")
+        return
+
+    df = pd.read_csv(INPUT_FILE)
+
+    stats = {}
+    for col in ["js_divergence", "wasserstein"]:
+        if col not in df.columns:
+            print(f"[!] Columna faltante: {col}")
+            continue
+
+        values = df[col]
+        stats[col] = {
+            "mean": np.mean(values),
+            "std": np.std(values),
+            "percentile_95": np.percentile(values, 95),
+            "percentile_99": np.percentile(values, 99),
+            "min": np.min(values),
+            "max": np.max(values)
+        }
+
+    # Imprimir resultados
+    print("\n�� Estadísticas de divergencias bootstrap (BENIGNOS):")
+    for metric, values in stats.items():
+        print(f"\n{metric.upper()}:")
+        for k, v in values.items():
+            print(f"  {k:>15}: {v:.6f}")
+
+    # Guardar como JSON
+    with open(OUTPUT_FILE, "w") as f:
+        json.dump(stats, f, indent=4)
+    print(f"\n[✓] Estadísticas guardadas en {OUTPUT_FILE}")
+
+if __name__ == "__main__":
+    main()
