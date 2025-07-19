@@ -1,0 +1,1 @@
+After processing imput data three new files are generated in this folder: bening.csv with scaled bening events, attack_mimetic.csv with data of mimetic offensive attacks , and attack_scaled, the same file than the previous one, but with data scaled for inyection purporses.
